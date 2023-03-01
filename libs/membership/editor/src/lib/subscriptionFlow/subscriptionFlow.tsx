@@ -8,33 +8,9 @@ import {
 import {useTranslation} from 'react-i18next'
 import SubscriptionInterval from './subscriptionInterval'
 import {Tag} from 'rsuite'
-import styled from '@emotion/styled'
 import {DndContext, DragEndEvent} from '@dnd-kit/core'
 import DropContainerSubscriptionInterval from './dropContainerSubscriptionInterval'
 import {GraphqlClientContext} from './graphqlClientContext'
-
-const TimeLineContainer = styled.div`
-  display: flex;
-  flex-wrap: nowrap;
-`
-
-const TimeLineDay = styled.div`
-  width: 80px;
-`
-const UpperIntervalContainer = styled.div`
-  margin-left: 10px;
-  width: 140px;
-  background: white;
-  text-align: center;
-  padding-bottom: 10px;
-`
-
-const LowerIntervalContainer = styled.div`
-  margin-left: 10px;
-  width: 140px;
-  background: white;
-  text-align: center;
-`
 
 interface SubscriptionTimelineProps {
   subscriptionFlow: SubscriptionFlowFragment
@@ -82,6 +58,10 @@ export default function SubscriptionFlow({subscriptionFlow}: SubscriptionTimelin
     return Array.from({length: timelineEnd - timelineStart}, (_, i) => timelineStart + 1 + i)
   }, [subscriptionNonUserIntervals])
 
+  const skipDays: number[] = useMemo(() => {
+    return [-10, -9, -8, -7, -6, -5]
+  }, [timeLineArray])
+
   /**
    * FUNCTIONS
    */
@@ -114,16 +94,38 @@ export default function SubscriptionFlow({subscriptionFlow}: SubscriptionTimelin
     })
   }
 
+  const cellStyle = {
+    textAlign: 'center'
+  } as const
+
+  const cellStyleCollapsed = {
+    textAlign: 'center',
+    perspective: '100px'
+  } as const
+
   return (
     <DndContext onDragEnd={event => intervalDragEnd(event)}>
-      {/* upper subscription intervals */}
-      <TimeLineContainer style={{alignItems: 'flex-end'}}>
-        {timeLineArray.map(day => {
-          const currentIntervals = day % 2 === 0 ? getSubscriptionActionsByDay(day) : []
-          return (
-            <TimeLineDay key={day}>
-              {day % 2 === 0 && (
-                <UpperIntervalContainer>
+      <table>
+        <thead>
+          <tr>
+            {timeLineArray.map(day => {
+              if (skipDays.includes(day)) {
+                return <th style={{width: '20px', textAlign: 'center'}}>S</th>
+              } else {
+                return <th style={{width: '140px', textAlign: 'center'}}>R</th>
+              }
+            })}
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            {timeLineArray.map(day => {
+              if (day % 2 !== 0 || skipDays.includes(day)) {
+                return <td></td>
+              }
+              const currentIntervals = day % 2 === 0 ? getSubscriptionActionsByDay(day) : []
+              return (
+                <td style={cellStyle}>
                   <DropContainerSubscriptionInterval dayIndex={day}>
                     {currentIntervals.map(currentInterval => (
                       <SubscriptionInterval
@@ -134,66 +136,39 @@ export default function SubscriptionFlow({subscriptionFlow}: SubscriptionTimelin
                       />
                     ))}
                   </DropContainerSubscriptionInterval>
-                </UpperIntervalContainer>
-              )}
-            </TimeLineDay>
-          )
-        })}
-      </TimeLineContainer>
-
-      {/* timeline */}
-      <TimeLineContainer>
-        {timeLineArray.map((day, dayIndex) => (
-          <TimeLineDay key={day}>
-            <div
-              style={{
-                height: '15px',
-                marginBottom: '15px',
-                borderRight: day % 2 === 0 ? '1px solid black' : 'none'
-              }}
-            />
-
-            <div
-              style={{
-                borderBottom: dayIndex !== 0 ? '1px solid black' : 'none',
-                position: 'relative'
-              }}>
-              {/* day number */}
-              <div
-                style={{
-                  position: 'absolute',
-                  right: '-40px',
-                  zIndex: 1,
-                  bottom: '-10px',
-                  width: '100%'
-                }}>
-                <div style={{textAlign: 'center'}}>
+                </td>
+              )
+            })}
+          </tr>
+          <tr>
+            {timeLineArray.map(day => {
+              const rotation = day % 2 === 0 ? '60deg' : '-60deg'
+              if (skipDays.includes(day)) {
+                return (
+                  <td style={cellStyleCollapsed}>
+                    <Tag color="green" size="sm" style={{transform: `rotateY(${rotation})`}}>
+                      Tag {day}
+                    </Tag>
+                  </td>
+                )
+              }
+              return (
+                <td style={cellStyle}>
                   <Tag color="green" size="sm">
                     Tag {day}
                   </Tag>
-                </div>
-              </div>
-            </div>
-
-            <div
-              style={{
-                height: '15px',
-                marginTop: '15px',
-                borderRight: day % 2 !== 0 ? '1px solid black' : 'none'
-              }}
-            />
-          </TimeLineDay>
-        ))}
-      </TimeLineContainer>
-
-      {/* upper subscription intervals */}
-      <TimeLineContainer>
-        {timeLineArray.map(day => {
-          const currentIntervals = day % 2 !== 0 ? getSubscriptionActionsByDay(day) : []
-          return (
-            <TimeLineDay key={day}>
-              {day % 2 !== 0 && (
-                <LowerIntervalContainer>
+                </td>
+              )
+            })}
+          </tr>
+          <tr>
+            {timeLineArray.map(day => {
+              if (day % 2 === 0 || skipDays.includes(day)) {
+                return <td></td>
+              }
+              const currentIntervals = day % 2 !== 0 ? getSubscriptionActionsByDay(day) : []
+              return (
+                <td style={cellStyle}>
                   <DropContainerSubscriptionInterval dayIndex={day}>
                     {currentIntervals.map(currentInterval => (
                       <SubscriptionInterval
@@ -204,12 +179,12 @@ export default function SubscriptionFlow({subscriptionFlow}: SubscriptionTimelin
                       />
                     ))}
                   </DropContainerSubscriptionInterval>
-                </LowerIntervalContainer>
-              )}
-            </TimeLineDay>
-          )
-        })}
-      </TimeLineContainer>
+                </td>
+              )
+            })}
+          </tr>
+        </tbody>
+      </table>
     </DndContext>
   )
 }
