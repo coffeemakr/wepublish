@@ -9,7 +9,7 @@ export interface ModuleAsyncOptions<OptionsType> extends Pick<ModuleMetadata, 'i
 }
 
 export const createAsyncOptionsProvider = <OptionsType>(
-  provide: string,
+  provide: string | symbol,
   options: ModuleAsyncOptions<OptionsType>
 ): Provider => {
   if (options.useFactory) {
@@ -19,17 +19,20 @@ export const createAsyncOptionsProvider = <OptionsType>(
       inject: options.inject || []
     }
   }
+
   if (options.useExisting) {
     return {
       provide,
       useExisting: options.useExisting
     }
   }
+
   if (options.useClass) {
     return {
       provide,
       useExisting: options.useClass
     }
   }
-  throw new Error(`Provider ${provide} not set up properly`)
+
+  throw new Error(`Provider ${provide.toString()} not set up properly`)
 }

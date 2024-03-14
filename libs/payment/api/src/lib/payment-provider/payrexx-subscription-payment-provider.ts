@@ -2,10 +2,7 @@ import {Invoice, MetadataProperty, PaymentState, PrismaClient, Subscription} fro
 import {logger, mapPaymentPeriodToMonths} from '@wepublish/utils/api'
 import * as crypto from 'crypto'
 import {timingSafeEqual} from 'crypto'
-import add from 'date-fns/add'
-import parseISO from 'date-fns/parseISO'
-import startOfDay from 'date-fns/startOfDay'
-import sub from 'date-fns/sub'
+import {add, parseISO, startOfDay, sub} from 'date-fns'
 import fetch from 'node-fetch'
 import qs from 'qs'
 import {
