@@ -3,7 +3,8 @@ import {
   Article as PrismaArticle,
   ArticleRevision as PrismaArticleRevision,
   ArticleRevisionAuthor,
-  ArticleRevisionSocialMediaAuthor
+  ArticleRevisionSocialMediaAuthor,
+  TaggedArticles
 } from '@prisma/client'
 import {ArticleBlock} from './block'
 import {DateFilter} from './common'
@@ -109,6 +110,7 @@ export type ArticleRevisionWithRelations = PrismaArticleRevision & {
 }
 
 export type ArticleWithRevisions = PrismaArticle & {
+  tags: TaggedArticles[]
   draft: ArticleRevisionWithRelations | null
   pending: ArticleRevisionWithRelations | null
   published: ArticleRevisionWithRelations | null

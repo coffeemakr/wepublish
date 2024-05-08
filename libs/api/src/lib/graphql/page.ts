@@ -108,7 +108,10 @@ export const GraphQLPageRevision = new GraphQLObjectType<PageRevision, Context>(
 
     title: {type: GraphQLString},
     description: {type: GraphQLString},
-    tags: {type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString)))},
+    tags: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))),
+      deprecationReason: 'Tags now live on the Page itself'
+    },
 
     properties: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLMetadataProperty)))

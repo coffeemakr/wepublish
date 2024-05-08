@@ -352,6 +352,7 @@ export async function contextFromRequest(
             }
           },
           include: {
+            tags: true,
             draft: {
               include: {
                 properties: true,

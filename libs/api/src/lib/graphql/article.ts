@@ -138,7 +138,10 @@ export const GraphQLArticleRevision = new GraphQLObjectType<ArticleRevision, Con
     lead: {type: GraphQLString},
     seoTitle: {type: GraphQLString},
     slug: {type: GraphQLString},
-    tags: {type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString)))},
+    tags: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))),
+      deprecationReason: 'Tags now live on the Article itself'
+    },
 
     properties: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLMetadataProperty)))
