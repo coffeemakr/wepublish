@@ -5,8 +5,7 @@ import {DuplicateArticleSlugError, NotFound} from '../../error'
 import {authorise} from '../permissions'
 import {CanCreateArticle, CanDeleteArticle, CanPublishArticle} from '@wepublish/permissions/api'
 
-const fullArticleInclude: Prisma.ArticleInclude = {
-  tags: true,
+const fullArticleInclude = {
   draft: {
     include: {
       properties: true,
@@ -28,7 +27,7 @@ const fullArticleInclude: Prisma.ArticleInclude = {
       socialMediaAuthors: true
     }
   }
-}
+} as const
 
 export const deleteArticleById = async (
   id: string,
@@ -467,15 +466,13 @@ export const updateArticle = async (
   id: string,
   {properties, authorIDs, socialMediaAuthorIDs, shared, hidden, tags, ...input}: UpdateArticleInput,
   authenticate: Context['authenticate'],
-  articleClient: PrismaClient['article']
+  articleClient: PrismaClient['article'],
+  articleLoader: Context['loaders']['articles']
 ) => {
   const {roles} = authenticate()
   authorise(CanCreateArticle, roles)
 
-  const article = await articleClient.findUnique({
-    where: {id},
-    include: fullArticleInclude
-  })
+  const article = await articleLoader.load(id)
 
   if (!article) {
     throw new NotFound('article', id)

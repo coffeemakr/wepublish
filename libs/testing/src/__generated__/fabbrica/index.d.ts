@@ -2085,6 +2085,7 @@ type TagFactoryDefineInput = {
     modifiedAt?: Date;
     type?: TagType;
     tag?: string | null;
+    main?: boolean;
     comments?: Prisma.TaggedCommentsCreateNestedManyWithoutTagInput;
     events?: Prisma.TaggedEventsCreateNestedManyWithoutTagInput;
     authors?: Prisma.TaggedAuthorsCreateNestedManyWithoutTagInput;

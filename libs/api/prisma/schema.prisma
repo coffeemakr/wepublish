@@ -137,7 +137,7 @@ model TaggedArticles {
   modifiedAt DateTime @updatedAt
 
   @@id([articleId, tagId])
-  @@map("events.tagged-articles")
+  @@map("articles.tagged-articles")
 }
 
 model AuthorsLinks {
@@ -607,7 +607,7 @@ model TaggedPages {
   modifiedAt DateTime @updatedAt
 
   @@id([pageId, tagId])
-  @@map("events.tagged-pages")
+  @@map("pages.tagged-pages")
 }
 
 model PaymentMethod {
@@ -908,6 +908,7 @@ model Tag {
 
   type TagType
   tag  String?
+  main Boolean @default(false)
 
   comments TaggedComments[]
   events   TaggedEvents[]

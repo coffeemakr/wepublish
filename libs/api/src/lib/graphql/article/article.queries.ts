@@ -294,7 +294,8 @@ export const getArticles = async (
             authors: true,
             socialMediaAuthors: true
           }
-        }
+        },
+        tags: true
       }
     })
   ])
